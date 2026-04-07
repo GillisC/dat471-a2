@@ -12,5 +12,5 @@ apptainer exec \
     --bind "$HOME" \
     --bind "$dataset:$HOME/a2-multiprocessing/data" \
     $container \
-    python3 assignment2_problem2f.py data/small -w 4 -b 32
+    python3 assignment2_problem2f.py data/tiny
 

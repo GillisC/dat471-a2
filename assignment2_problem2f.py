@@ -6,6 +6,7 @@ import multiprocessing as mp
 from multiprocessing import Process
 from queue import Queue
 
+global_dict = dict()
 
 def get_filenames(path):
     """
@@ -50,25 +51,30 @@ def count_words_in_file(filename_queue,wordcount_queue,batch_size):
 
     Returns: None
     """
-    batch = []
-    for _ in range(batch_size):
-        filename = filename_queue.get()
-        if filename is None: 
-            wordcount_queue.put(None)
-            break
-        batch.append(filename)
+    running = True
+    while running:
+        batch = []
+        for _ in range(batch_size):
+            filename = filename_queue.get()
+            if filename is None: 
+                wordcount_queue.put(None)
+                running = False
+                break
+            batch.append(filename)
 
-    for filename in batch:
-        counts = dict()
-        file = get_file(filename)
-        for word in file.split():
-            if word in counts:
-                counts[word] += 1
-            else:
 
-                counts[word] = 1
+        for filename in batch:
+            counts = dict()
+            file = get_file(filename)
+            for word in file.split():
+                if word in counts:
+                    counts[word] += 1
+                else:
 
-        wordcount_queue.put(counts)
+                    counts[word] = 1
+
+            print(counts)
+            wordcount_queue.put(counts)
 
 
     def get_top10(counts):
@@ -185,12 +191,16 @@ if __name__ == '__main__':
     for _ in range(num_workers):
         filename_queue.put(None)
 
+    print("queue e.t.c done")
+
     # workers then put dictionaries for the merger
     for worker in workers:
         worker.start()
 
     # the merger shall return the checksum and top 10 through the out queue
     merger.start()
+
+    print("merger done")
 
     while (result_dict := out_queue.get()) is not None:
         print(result_dict["top_10"])

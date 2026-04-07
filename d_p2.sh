@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+#SBATCH -p long
 #SBATCH -c 64
 #SBATCH -o latest.log
+
 
 container="/data/courses/2026_dat471_dit066/containers/assignment2.sif"
 
@@ -12,5 +14,5 @@ apptainer exec \
     --bind "$HOME" \
     --bind "$dataset:$HOME/a2-multiprocessing/data" \
     $container \
-    python3 assignment2_problem2d.py data/tiny -w 4 -b 32
+    python3 gather_data_d.py data/huge -w 4 -b 32
 

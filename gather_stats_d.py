@@ -16,7 +16,7 @@ batch_size = 128
 results = []
 
 for w in workers:
-    cmd = ["python3", "assignment2_problem2d.py", "data/medium", "-w", str(w), "-b", str(batch_size)]
+    cmd = ["python3", "assignment2_problem2d.py", "data/small", "-w", str(w), "-b", str(batch_size)]
     process = subprocess.run(cmd, capture_output=True, text=True)
     output = process.stdout
 
@@ -29,7 +29,7 @@ for w in workers:
         "parallel_time": parallel_time,
     })
 
-with open("results_parallel_huge.csv", "w") as f:
+with open("results_d.csv", "w") as f:
     writer = csv.DictWriter(f, fieldnames=["workers", "total_time", "parallel_time"])
     writer.writeheader()
     writer.writerows(results)

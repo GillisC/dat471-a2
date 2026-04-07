@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#SBATCH --partition=long
 #SBATCH -c 64
 #SBATCH -o latest.log
 
