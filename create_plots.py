@@ -37,9 +37,6 @@ df_e["sequential_time"] = df_e["total_time"] - df_e["parallel_time"]
 df_e["parallel_portion"] = df_e["parallel_time"] - df_e["total_time"]
 df_e["sequential_portion"] = df_e["sequential_time"] - df_e["total_time"]
 
-t_1 = df_e.loc[df_e["workers"] == 1, "total_time"].values[0]
-df_e["speedup"] = t_1 / df_e["total_time"]
-
 plt.figure(figsize=(10, 6.18))
 plt.plot(df_e['workers'], df_e['speedup'], marker='s', color='green', label='Actual Speedup')
 plt.axhline(y=max_theo_speedup, color='red', linestyle='--', 
