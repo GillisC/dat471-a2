@@ -1,4 +1,0 @@
-  File "/data/users/timca/a2-multiprocessing/create_plots.py", line 19
-    plt.figure(figsize=(12, 6)
-              ^
-SyntaxError: '(' was never closed
