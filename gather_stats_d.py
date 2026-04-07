@@ -7,7 +7,6 @@ For each run configuration
     run the script
     grab the total time and number of workers used
     store in a dict
-
 convert dict to a csv
 """
 

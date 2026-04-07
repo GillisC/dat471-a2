@@ -6,7 +6,7 @@ import multiprocessing as mp
 from multiprocessing import Process
 from queue import Queue
 
-global_dict = dict()
+global_counts = dict()
 
 def get_filenames(path):
     """
@@ -51,30 +51,37 @@ def count_words_in_file(filename_queue,wordcount_queue,batch_size):
 
     Returns: None
     """
-    running = True
-    while running:
+    print(f"[DEBUG] Process {os.getpid()} entered count_words_in_file", flush=True)
+    exit_process = False
+
+    while True:
         batch = []
         for _ in range(batch_size):
+            print(f"[DEBUG] Process {os.getpid()} waiting for filename...", flush=True)
             filename = filename_queue.get()
+            print(f"[DEBUG] Process {os.getpid()} got {filename}", flush=True)
             if filename is None: 
-                wordcount_queue.put(None)
-                running = False
+                print(f"[DEBUG] Process {os.getpid()} got None", flush=True)
+                exit_process = True
                 break
             batch.append(filename)
 
 
-        for filename in batch:
+        for name in batch:
             counts = dict()
-            file = get_file(filename)
+            file = get_file(name)
             for word in file.split():
                 if word in counts:
                     counts[word] += 1
                 else:
-
                     counts[word] = 1
-
-            print(counts)
             wordcount_queue.put(counts)
+            print(f"[DEBUG] Process {os.getpid()} appended to wordcount_queue", flush=True)
+
+        if exit_process: 
+            break
+
+    print(f"[DEBUG] Process {os.getpid()} exiting count_words_in_file", flush=True)
 
 
     def get_top10(counts):
@@ -111,12 +118,18 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
 
     Return value: None
     """
+    print(f"[DEBUG] Process {os.getpid()} entered merge_counts", flush=True)
 
     nones_seen = 0
 
-    while nones_seen < 4:
+    while nones_seen < num_workers:
+        print(f"[DEBUG] Process {os.getpid()} waiting for count dicts", flush=True)
         dict_from = wordcount_queue.get()
-        if dict_from is None: nones_seen += 1
+        print(f"[DEBUG] Process {os.getpid()} got count dicts", flush=True)
+        if dict_from is None: 
+            print(f"[DEBUG] Process {os.getpid()} found None", flush=True)
+            nones_seen += 1
+            continue
 
         for (k,v) in dict_from.items():
             if k not in global_counts:
@@ -124,11 +137,7 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
             else:
                 global_counts[k] += v
 
-    
-    out_queue.put({
-        "top_10": get_top10(global_counts),
-        "checksum": compute_checksum(global_counts)
-    })
+    out_queue.put({"top_10": get_top10(global_counts), "checksum": compute_checksum(global_counts)})
     out_queue.put(None)
 
     return None
@@ -182,27 +191,30 @@ if __name__ == '__main__':
     wordcount_queue = Queue()
 
     workers = [Process(target=count_words_in_file, args=(filename_queue,wordcount_queue,batch_size)) for _ in range(num_workers)]
+    merger = Process(target=merge_counts, args=(out_queue,wordcount_queue,num_workers))
     # construct a single special merger process
-    merger = Process(target=merge_counts, args=(out_queue,wordcount_queue,1))
-
+    
+    print(f"[DEBUG] Process {os.getpid()} to find filenames", flush=True)
     # put filenames into the input queue
     for name in get_filenames(path): 
         filename_queue.put(name)
     for _ in range(num_workers):
         filename_queue.put(None)
 
-    print("queue e.t.c done")
-
-    # workers then put dictionaries for the merger
     for worker in workers:
         worker.start()
 
+    print(f"[DEBUG] Process {os.getpid()} populated the filenames queue", flush=True)
+    # workers then put dictionaries for the merger
+
     # the merger shall return the checksum and top 10 through the out queue
+    for worker in workers:
+        worker.join()
+
     merger.start()
+    merger.join()
+    print(f"[DEBUG] Process {os.getpid()} all workers done", flush=True)
 
-    print("merger done")
-
-    while (result_dict := out_queue.get()) is not None:
-        print(result_dict["top_10"])
-        print(result_dict["checksum"])
-
+    result_dict = out_queue.get()
+    print(result_dict["top_10"])
+    print(result_dict["checksum"])

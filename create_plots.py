@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 df_d = pd.read_csv("results_parallel_huge.csv")
 df_e = pd.read_csv("results_e.csv")
 
