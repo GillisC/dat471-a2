@@ -16,7 +16,6 @@ s_portion = s_time / t_1
 
 max_theo_speedup = 1 / s_portion
 
-plt.subplot(1, 2, 2)
 plt.plot(df['workers'], df['speedup'], marker='s', color='green', label='Actual Speedup')
 plt.axhline(y=max_theo_speedup, color='red', linestyle='--', 
             label=f'Amdahl Limit ({max_theo_speedup:.2f}x)')
