@@ -3,8 +3,8 @@ import argparse
 import sys
 import time
 import multiprocessing as mp
-from multiprocessing import Process
-from queue import Queue
+from multiprocessing import Process, Queue
+
 
 global_counts = dict()
 
@@ -51,47 +51,46 @@ def count_words_in_file(filename_queue,wordcount_queue,batch_size):
 
     Returns: None
     """
-    print(f"[DEBUG] Process {os.getpid()} entered count_words_in_file", flush=True)
+    #print(f"[DEBUG] Process {os.getpid()} entered count_words_in_file", flush=True)
     exit_process = False
 
     while True:
         batch = []
         for _ in range(batch_size):
-            print(f"[DEBUG] Process {os.getpid()} waiting for filename...", flush=True)
+            #print(f"[DEBUG] Process {os.getpid()} waiting for filename...", flush=True)
             filename = filename_queue.get()
-            print(f"[DEBUG] Process {os.getpid()} got {filename}", flush=True)
+            #print(f"[DEBUG] Process {os.getpid()} got {filename}", flush=True)
             if filename is None: 
-                print(f"[DEBUG] Process {os.getpid()} got None", flush=True)
+                #print(f"[DEBUG] Process {os.getpid()} got None", flush=True)
                 exit_process = True
                 break
             batch.append(filename)
 
 
+        counts = {}
         for name in batch:
-            counts = dict()
             file = get_file(name)
             for word in file.split():
                 if word in counts:
                     counts[word] += 1
                 else:
                     counts[word] = 1
-            wordcount_queue.put(counts)
-            print(f"[DEBUG] Process {os.getpid()} appended to wordcount_queue", flush=True)
+        wordcount_queue.put(counts)
 
         if exit_process: 
             break
 
-    print(f"[DEBUG] Process {os.getpid()} exiting count_words_in_file", flush=True)
+    wordcount_queue.put(None)
 
 
-    def get_top10(counts):
-        """
-        Determines the 10 words with the most occurrences.
-        Ties can be solved arbitrarily.
+def get_top10(counts):
+    """
+    Determines the 10 words with the most occurrences.
+    Ties can be solved arbitrarily.
 
-        Parameters:
-        - counts, dictionary : a mapping from words (str) to counts (int)
-    
+    Parameters:
+    - counts, dictionary : a mapping from words (str) to counts (int)
+
     Return value:
     A list of (count,word) pairs (int,str)
     """
@@ -118,16 +117,12 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
 
     Return value: None
     """
-    print(f"[DEBUG] Process {os.getpid()} entered merge_counts", flush=True)
 
     nones_seen = 0
 
     while nones_seen < num_workers:
-        print(f"[DEBUG] Process {os.getpid()} waiting for count dicts", flush=True)
         dict_from = wordcount_queue.get()
-        print(f"[DEBUG] Process {os.getpid()} got count dicts", flush=True)
         if dict_from is None: 
-            print(f"[DEBUG] Process {os.getpid()} found None", flush=True)
             nones_seen += 1
             continue
 
@@ -137,7 +132,10 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
             else:
                 global_counts[k] += v
 
-    out_queue.put({"top_10": get_top10(global_counts), "checksum": compute_checksum(global_counts)})
+    out_queue.put({
+        "top_10": get_top10(global_counts), 
+        "checksum": compute_checksum(global_counts)
+    })
     out_queue.put(None)
 
     return None
@@ -163,6 +161,8 @@ def compute_checksum(counts):
 
 
 if __name__ == '__main__':
+    print("starting now")
+    start = time.time()
     parser = argparse.ArgumentParser(description='Counts words of all the text files in the given directory')
     parser.add_argument('-w', '--num-workers', help = 'Number of workers', default=1, type=int)
     parser.add_argument('-b', '--batch-size', help = 'Batch size', default=1, type=int)
@@ -185,36 +185,42 @@ if __name__ == '__main__':
         sys.stderr.write(f'{sys.argv[0]}: ERROR: Batch size must be positive (got {batch_size})!\n')
         quit(1)
 
+
+    #print(f"[DEBUG] number of workers: {num_workers}", flush=True)
+
     # construct workers and queues
     filename_queue = Queue()
     out_queue = Queue()
     wordcount_queue = Queue()
 
-    workers = [Process(target=count_words_in_file, args=(filename_queue,wordcount_queue,batch_size)) for _ in range(num_workers)]
+    # we provisioon workers - 2 so that we leave space for the main and merger process
+    workers = [Process(target=count_words_in_file, args=(filename_queue,wordcount_queue,batch_size)) for _ in range(num_workers - 2)]
     merger = Process(target=merge_counts, args=(out_queue,wordcount_queue,num_workers))
+
     # construct a single special merger process
-    
-    print(f"[DEBUG] Process {os.getpid()} to find filenames", flush=True)
+    merger.start()
+
+    for worker in workers:
+        worker.start()
+
     # put filenames into the input queue
     for name in get_filenames(path): 
         filename_queue.put(name)
     for _ in range(num_workers):
         filename_queue.put(None)
 
-    for worker in workers:
-        worker.start()
-
-    print(f"[DEBUG] Process {os.getpid()} populated the filenames queue", flush=True)
     # workers then put dictionaries for the merger
 
     # the merger shall return the checksum and top 10 through the out queue
+    while (result_dict := out_queue.get()) is not None:
+        print(result_dict["top_10"])
+        print(result_dict["checksum"])
+
+    end = time.time()
+    t_total = end - start
+    print(f"total time: {t_total}")
+
+    # join the workers up
+    merger.join()
     for worker in workers:
         worker.join()
-
-    merger.start()
-    merger.join()
-    print(f"[DEBUG] Process {os.getpid()} all workers done", flush=True)
-
-    result_dict = out_queue.get()
-    print(result_dict["top_10"])
-    print(result_dict["checksum"])

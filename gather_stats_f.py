@@ -7,7 +7,6 @@ For each run configuration
     run the script
     grab the total time and number of workers used
     store in a dict
-
 convert dict to a csv
 """
 
@@ -16,7 +15,7 @@ batch_size = 128
 results = []
 
 for w in workers:
-    cmd = ["python3", "assignment2_problem2e.py", "data/huge", "-w", str(w), "-b", str(batch_size)]
+    cmd = ["python3", "assignment2_problem2f.py", "data/medium", "-w", str(w), "-b", str(batch_size)]
     process = subprocess.run(cmd, capture_output=True, text=True)
     output = process.stdout
 
@@ -28,7 +27,7 @@ for w in workers:
     })
     print(f"finished run using {w} workers")
 
-with open("results_e.csv", "w") as f:
+with open("results_f.csv", "w") as f:
     writer = csv.DictWriter(f, fieldnames=["workers", "total_time"])
     writer.writeheader()
     writer.writerows(results)

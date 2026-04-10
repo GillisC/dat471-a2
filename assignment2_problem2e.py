@@ -139,6 +139,8 @@ def compute_checksum(counts):
 
 
 if __name__ == '__main__':
+    start = time.time()
+
     parser = argparse.ArgumentParser(description='Counts words of all the text files in the given directory')
     parser.add_argument('-w', '--num-workers', help = 'Number of workers', default=1, type=int)
     parser.add_argument('-b', '--batch-size', help = 'Batch size', default=1, type=int)
@@ -161,20 +163,13 @@ if __name__ == '__main__':
         sys.stderr.write(f'{sys.argv[0]}: ERROR: Batch size must be positive (got {batch_size})!\n')
         quit(1)
 
-    print("num workers:", num_workers)
-    print("batch size:", batch_size)
-    
-    start = time.time()
-    
     # 1. Get the filenames
     filenames = get_filenames(path)
-    t1 = time.time()
 
     # 2. Count the word occurences for each file (Parallelizable)
     file_counts = list()
     with Pool(num_workers) as p:
         file_counts = p.map(count_words_in_file, filenames)
-    t2 = time.time()
 
     # 3. Merge the word occurences into a single dict (Sequential)
     global_counts = dict()
@@ -182,20 +177,8 @@ if __name__ == '__main__':
         merge_counts(global_counts,counts)
 
     end = time.time()
-
     t_total = end - start
-    t_parallel = t2 - start
-    t_sequential = end - t2
-
     print(f"total time: {t_total}")
-    print(f"parallel time: {t_parallel}")
-    print(f"sequential time: {t_sequential}")
-    print(f"parallel portion: {t_parallel/t_total}")
-    print(f"sequential portion: {t_sequential/t_total}")
-
-    print(f"block 1 (get content of files): {t1 - start}")
-    print(f"block 2 (count the occurences): {t2 - t1}")
-    print(f"block 3 (merge the occurences): {end - t2}")
 
     top_10 = get_top10(global_counts)
     print("Top10 words (occurence)")

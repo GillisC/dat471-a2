@@ -11,25 +11,24 @@ convert dict to a csv
 """
 
 workers = [1, 2, 4, 8, 16, 32, 64]
-batch_size = 128
+batch_size = 32
 results = []
 
 for w in workers:
-    cmd = ["python3", "assignment2_problem2d.py", "data/small", "-w", str(w), "-b", str(batch_size)]
+    cmd = ["python3", "assignment2_problem2d.py", "data/huge", "-w", str(w), "-b", str(batch_size)]
     process = subprocess.run(cmd, capture_output=True, text=True)
     output = process.stdout
 
     total_time = re.search(r"total time: ([\d.]+)", output).group(1)
-    parallel_time = re.search(r"parallel time: ([\d.]+)", output).group(1)
 
     results.append({
         "workers": w,
         "total_time": total_time,
-        "parallel_time": parallel_time,
     })
+    print(f"finished run using {w} workers")
 
 with open("results_d.csv", "w") as f:
-    writer = csv.DictWriter(f, fieldnames=["workers", "total_time", "parallel_time"])
+    writer = csv.DictWriter(f, fieldnames=["workers", "total_time"])
     writer.writeheader()
     writer.writerows(results)
     

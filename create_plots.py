@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-df_d = pd.read_csv("results_parallel_huge.csv")
+df_d = pd.read_csv("results_d.csv")
 df_e = pd.read_csv("results_e.csv")
+df_f = pd.read_csv("results_f.csv")
 
+# gotten from problem 2 c)
 max_theo_speedup = 6.135
 
 # PLOT E
