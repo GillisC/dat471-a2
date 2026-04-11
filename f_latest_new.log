@@ -1,1 +1,14 @@
-slurmstepd-europa: error: *** JOB 172385 ON europa CANCELLED AT 2026-04-10T20:18:25 ***
+starting for 1 workers
+finished run using 1 workers
+starting for 2 workers
+finished run using 2 workers
+starting for 4 workers
+finished run using 4 workers
+starting for 8 workers
+finished run using 8 workers
+starting for 16 workers
+finished run using 16 workers
+starting for 32 workers
+finished run using 32 workers
+starting for 64 workers
+finished run using 64 workers

@@ -11,11 +11,12 @@ convert dict to a csv
 """
 
 workers = [1, 2, 4, 8, 16, 32, 64]
-batch_size = 128
+batch_size = 512
 results = []
 
 for w in workers:
-    cmd = ["python3", "assignment2_problem2f.py", "data/medium", "-w", str(w), "-b", str(batch_size)]
+    print(f"starting for {w} workers")
+    cmd = ["python3", "assignment2_problem2f.py", "data/huge", "-w", str(w), "-b", str(batch_size)]
     process = subprocess.run(cmd, capture_output=True, text=True)
     output = process.stdout
 

@@ -68,14 +68,9 @@ def count_words_in_files(files):
 
     Returns: Dictionary that maps words (strings) to counts (ints)
     """
-    print("num_files: ", len(files))
-    print("file_names", files[0:10])
     counts_list = []
     for file in files:
         counts_list.append(count_words_in_file(file))
-
-    print("length of counts_list: ", len(counts_list))
-    print(counts_list[0])
     return counts_list
 
 

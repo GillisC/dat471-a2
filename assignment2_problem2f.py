@@ -3,9 +3,8 @@ import argparse
 import sys
 import time
 import multiprocessing as mp
-from multiprocessing import Process, Queue
-import multiprocessin
-
+from multiprocessing import Process, Queue, Manager
+import multiprocessing
 
 global_counts = dict()
 
@@ -67,7 +66,6 @@ def count_words_in_file(filename_queue,wordcount_queue,batch_size):
                 break
             batch.append(filename)
 
-
         counts = {}
         for name in batch:
             file = get_file(name)
@@ -121,7 +119,7 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
 
     nones_seen = 0
 
-    while nones_seen < (num_workers - 2):
+    while nones_seen < num_workers:
         dict_from = wordcount_queue.get()
         if dict_from is None: 
             nones_seen += 1
@@ -162,7 +160,6 @@ def compute_checksum(counts):
 
 
 if __name__ == '__main__':
-    print("starting now")
     start = time.time()
     parser = argparse.ArgumentParser(description='Counts words of all the text files in the given directory')
     parser.add_argument('-w', '--num-workers', help = 'Number of workers', default=1, type=int)
@@ -187,7 +184,6 @@ if __name__ == '__main__':
         quit(1)
 
 
-    #print(f"[DEBUG] number of workers: {num_workers}", flush=True)
 
     # construct workers and queues
     filename_queue = multiprocessing.Queue()
@@ -208,8 +204,9 @@ if __name__ == '__main__':
     # put filenames into the input queue
     for name in get_filenames(path): 
         filename_queue.put(name)
-    for _ in range(num_workers):
+    for _ in range(nw):
         filename_queue.put(None)
+
 
     # workers then put dictionaries for the merger
 

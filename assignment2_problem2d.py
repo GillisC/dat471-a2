@@ -172,14 +172,8 @@ if __name__ == '__main__':
         merge_counts(global_counts,counts)
 
     end = time.time()
-
     t_total = end - start
-
     print(f"total time: {t_total}")
-
-    print(f"block 1 (get content of files): {t1 - start}")
-    print(f"block 2 (count the occurences): {t2 - t1}")
-    print(f"block 3 (merge the occurences): {end - t2}")
 
     top_10 = get_top10(global_counts)
     print("Top10 words (occurence)")

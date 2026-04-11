@@ -1,12 +1,12 @@
-total time: 695.6483428478241
-parallel time: 455.97449493408203
-sequential time: 239.67384791374207
-parallel portion: 0.6554669462266344
-sequential portion: 0.3445330537733656
-block 1 (parse arguments)     : 0.22714877128601074
-block 2 (get content of files): 87.61392498016357
-block 3 (count the occurences): 368.36056995391846
-block 4 (merge the occurences): 239.44669914245605
+total time: 687.3612148761749
+parallel time: 445.66128301620483
+sequential time: 241.6999318599701
+parallel portion: 0.6483654785446233
+sequential portion: 0.35163452145537666
+block 1 (parse arguments)     : 0.04906487464904785
+block 2 (get content of files): 73.83320832252502
+block 3 (count the occurences): 371.8280746936798
+block 4 (merge the occurences): 241.65086698532104
 Top10 words (occurence)
 the: 148499457
 of: 89408738
