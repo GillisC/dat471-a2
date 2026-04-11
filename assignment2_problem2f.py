@@ -120,7 +120,7 @@ def merge_counts(out_queue,wordcount_queue,num_workers):
 
     nones_seen = 0
 
-    while nones_seen < num_workers:
+    while nones_seen < (num_workers - 2):
         dict_from = wordcount_queue.get()
         if dict_from is None: 
             nones_seen += 1
