@@ -4,6 +4,7 @@ import sys
 import time
 import multiprocessing as mp
 from multiprocessing import Process, Queue
+import multiprocessin
 
 
 global_counts = dict()
@@ -189,19 +190,20 @@ if __name__ == '__main__':
     #print(f"[DEBUG] number of workers: {num_workers}", flush=True)
 
     # construct workers and queues
-    filename_queue = Queue()
-    out_queue = Queue()
-    wordcount_queue = Queue()
+    filename_queue = multiprocessing.Queue()
+    out_queue = multiprocessing.Queue()
+    wordcount_queue = multiprocessing.Queue()
 
     # we provisioon workers - 2 so that we leave space for the main and merger process
-    workers = [Process(target=count_words_in_file, args=(filename_queue,wordcount_queue,batch_size)) for _ in range(num_workers - 2)]
-    merger = Process(target=merge_counts, args=(out_queue,wordcount_queue,num_workers))
+    nw = max(1, num_workers - 2)
+    workers = [Process(target=count_words_in_file, args=(filename_queue,wordcount_queue,batch_size)) for _ in range(nw)]
+    merger = Process(target=merge_counts, args=(out_queue,wordcount_queue,nw))
 
     # construct a single special merger process
-    merger.start()
-
     for worker in workers:
         worker.start()
+
+    merger.start()
 
     # put filenames into the input queue
     for name in get_filenames(path): 
