@@ -6,40 +6,27 @@ df_e = pd.read_csv("results_e.csv")
 df_f = pd.read_csv("results_f.csv")
 
 # gotten from problem 2 c)
-max_theo_speedup = 6.135
+max_theo_speedup = 2.8438
+
+def gen_plot(df, title: str, max_speedup):
+    t_1 = df_d.loc[df["workers"] == 1, "total_time"].values[0]
+    df["speedup"] = t_1 / df["total_time"]
+
+    plt.figure(figsize=(10, 6.18))
+    plt.plot(df['workers'], df['speedup'], marker='s', label='Actual Speedup')
+    plt.axhline(y=max_theo_speedup, linestyle='--', 
+                label=f'Amdahl Limit ({max_theo_speedup:.2f}x)')
+
+    plt.xlabel('Number of Workers')
+    plt.ylabel('Speedup Factor')
+    plt.title('Performance Scaling (Speedup)')
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(f"{title}_plot.pdf")
 
 # PLOT E
-t_1 = df_d.loc[df_d["workers"] == 1, "total_time"].values[0]
-df_d["speedup"] = t_1 / df_d["total_time"]
-
-plt.figure(figsize=(10, 6.18))
-plt.plot(df_d['workers'], df_d['speedup'], marker='s', color='green', label='Actual Speedup')
-plt.axhline(y=max_theo_speedup, color='red', linestyle='--', 
-            label=f'Amdahl Limit ({max_theo_speedup:.2f}x)')
-
-plt.xlabel('Number of Workers')
-plt.ylabel('Speedup Factor')
-plt.title('Performance Scaling (Speedup)')
-plt.grid(True, linestyle='--', alpha=0.7)
-plt.legend()
-
-plt.tight_layout()
-plt.savefig('part_d_plot.png')
-
-#PLOT D
-t_1 = df_e.loc[df_e["workers"] == 1, "total_time"].values[0]
-df_e["speedup"] = t_1 / df_e["total_time"]
-
-plt.figure(figsize=(10, 6.18))
-plt.plot(df_e['workers'], df_e['speedup'], marker='s', color='green', label='Actual Speedup')
-plt.axhline(y=max_theo_speedup, color='red', linestyle='--', 
-            label=f'Amdahl Limit ({max_theo_speedup:.2f}x)')
-
-plt.xlabel('Number of Workers')
-plt.ylabel('Speedup Factor')
-plt.title('Performance Scaling (Speedup)')
-plt.grid(True, linestyle='--', alpha=0.7)
-plt.legend()
-
-plt.tight_layout()
-plt.savefig('part_e_plot.png')
+gen_plot(df_d, "part_d", max_theo_speedup)
+gen_plot(df_e, "part_e", max_theo_speedup)
+gen_plot(df_f, "part_f", max_theo_speedup)
