@@ -1,0 +1,99 @@
+starting for 1 batch_size
+finished run using 1 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 46.729262351989746
+ 
+
+
+starting for 2 batch_size
+finished run using 2 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 37.93320083618164
+ 
+
+
+starting for 4 batch_size
+finished run using 4 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 32.19393563270569
+ 
+
+
+starting for 8 batch_size
+finished run using 8 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 31.5604031085968
+ 
+
+
+starting for 16 batch_size
+finished run using 16 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 33.34478187561035
+ 
+
+
+starting for 32 batch_size
+finished run using 32 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 27.332723379135132
+ 
+
+
+starting for 64 batch_size
+finished run using 64 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 26.798787832260132
+ 
+
+
+starting for 128 batch_size
+finished run using 128 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 29.64728021621704
+ 
+
+
+starting for 256 batch_size
+finished run using 256 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 24.14211916923523
+ 
+
+
+starting for 512 batch_size
+finished run using 512 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 24.503302335739136
+ 
+
+
+starting for 1024 batch_size
+finished run using 1024 batch_size
+[(15876667, 'the'), (9441354, 'of'), (7711971, 'and'), (6558799, 'to'), (5392441, 'a'), (4706555, 'in'), (2616072, 'that'), (2600753, 'was'), (2092488, 'is'), (2061520, 'I')]
+1520444169
+total time: 24.544080018997192
+ 
+
+
+Traceback (most recent call last):
+  File "/data/users/timca/a2-multiprocessing/gather_batch_size_stats_f.py", line 36, in <module>
+    writer.writerows(results)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/conda/lib/python3.13/csv.py", line 229, in writerows
+    return self.writer.writerows(map(self._dict_to_list, rowdicts))
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.13/csv.py", line 221, in _dict_to_list
+    raise ValueError("dict contains fields not in fieldnames: "
+                     + ", ".join([repr(x) for x in wrong_fields]))
+ValueError: dict contains fields not in fieldnames: 'batch_size'

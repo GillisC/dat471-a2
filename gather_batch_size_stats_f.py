@@ -10,27 +10,28 @@ For each run configuration
 convert dict to a csv
 """
 
-workers = [1, 2, 4, 8, 16, 32, 64]
-batch_size = 512
+workers = 64
+batch_sizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
 results = []
 
-for w in workers:
-    print(f"starting for {w} workers")
-    cmd = ["python3", "assignment2_problem2f.py", "data/huge", "-w", str(w), "-b", str(batch_size)]
+for b in batch_sizes:
+    print(f"starting for {b} batch_size")
+    cmd = ["python3", "assignment2_problem2f.py", "data/big", "-w", str(workers), "-b", str(b)]
     process = subprocess.run(cmd, capture_output=True, text=True)
     output = process.stdout
 
     total_time = re.search(r"total time: ([\d.]+)", output).group(1)
 
     results.append({
-        "workers": w,
+        "workers": workers,
+        "batch_size": b,
         "total_time": total_time,
     })
-    print(f"finished run using {w} workers")
+    print(f"finished run using {b} batch_size")
     print(output, "\n\n")
 
-with open("results_f.csv", "w") as f:
-    writer = csv.DictWriter(f, fieldnames=["workers", "total_time"])
+with open("results_batch_sizes_f.csv", "w") as f:
+    writer = csv.DictWriter(f, fieldnames=["workers", "batch_size", "total_time"])
     writer.writeheader()
     writer.writerows(results)
     

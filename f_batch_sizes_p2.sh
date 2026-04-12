@@ -2,7 +2,7 @@
 
 #SBATCH --partition=long
 #SBATCH -c 64
-#SBATCH -o test_latest.log
+#SBATCH -o f_batch_sizes_latest.log
 
 container="/data/courses/2026_dat471_dit066/containers/assignment2.sif"
 assignment_root="$HOME/a2-multiprocessing"
@@ -12,4 +12,4 @@ apptainer exec \
     --bind "$HOME" \
     --bind "$dataset:$HOME/a2-multiprocessing/data" \
     $container \
-    bash -c "python3 assignment2_problem2f.py data/huge -w 64 -b 512"
+    bash -c "source .venv/bin/activate && python3 gather_batch_size_stats_f.py"

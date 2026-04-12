@@ -140,18 +140,21 @@ if __name__ == '__main__':
         quit(1)
 
     t1 = time.time()
-
-    # 2. Get the content of all files (Parallelizable)
-    files = [get_file(fn) for fn in get_filenames(path)]
+    # 2. Get filenames (Sequential)
+    filenames = [fn for fn in get_filenames(path)]
     t2 = time.time()
 
-    # 3. Count the word occurences for each file (Parallelizable)
+    # 3. Get file content (Parallelizable)
+    files = [get_file(fn) for fn in filenames]
+    t3 = time.time()
+
+    # 4. Count the word occurences for each file (Parallelizable)
     file_counts = list()
     for file in files:
         file_counts.append(count_words_in_file(file))
-    t3 = time.time()
+    t4 = time.time()
 
-    # 4. Merge the word occurences into a single dict (Sequential)
+    # 5. Merge the word occurences into a single dict (Sequential)
     global_counts = dict()
     for counts in file_counts:
         merge_counts(global_counts,counts)
@@ -159,8 +162,8 @@ if __name__ == '__main__':
     end = time.time()
 
     t_total = end - start
-    t_parallel = t3 - t1
-    t_sequential = (end - t3) + (t1 - start)
+    t_parallel = t4 - t2
+    t_sequential = (end - t4) + (t2 - start)
 
     print(f"total time: {t_total}")
     print(f"parallel time: {t_parallel}")
@@ -169,9 +172,10 @@ if __name__ == '__main__':
     print(f"sequential portion: {t_sequential/t_total}")
 
     print(f"block 1 (parse arguments)     : {t1 - start}")
-    print(f"block 2 (get content of files): {t2 - t1}")
-    print(f"block 3 (count the occurences): {t3 - t2}")
-    print(f"block 4 (merge the occurences): {end - t3}")
+    print(f"block 2 (get filenames)       : {t2 - t1}")
+    print(f"block 3 (get content of files): {t3 - t2}")
+    print(f"block 4 (count the occurences): {t4 - t3}")
+    print(f"block 5 (merge the occurences): {end - t4}")
 
     top_10 = get_top10(global_counts)
     print("Top10 words (occurence)")

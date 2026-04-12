@@ -6,7 +6,7 @@ df_e = pd.read_csv("results_e.csv")
 df_f = pd.read_csv("results_f.csv")
 
 # gotten from problem 2 c)
-max_theo_speedup = 2.8438
+max_theo_speedup = 5.53
 
 def gen_plot(df, title: str, max_speedup):
     t_1 = 687.3612148761749
