@@ -9,7 +9,7 @@ df_f = pd.read_csv("results_f.csv")
 max_theo_speedup = 2.8438
 
 def gen_plot(df, title: str, max_speedup):
-    t_1 = df_d.loc[df["workers"] == 1, "total_time"].values[0]
+    t_1 = 687.3612148761749
     df["speedup"] = t_1 / df["total_time"]
 
     plt.figure(figsize=(10, 6.18))
